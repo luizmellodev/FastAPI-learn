@@ -1,0 +1,58 @@
+{
+    "todos": [
+        {
+            "id": "f003d2a5-d17f-44a0-bf49-e1e187c44b1a",
+            "content": "Attend team meeting teste",
+            "completed": false,
+            "category_id": "dec79734-dab1-4b0a-b720-d8479fb0a78e"
+        },
+        {
+            "id": "2549c02e-eec3-4d5f-b79a-83f3d28dc677",
+            "content": "Update website",
+            "completed": false,
+            "category_id": "1fcd1662-0267-48dc-9ef7-7bc4e36dfc66"
+        },
+        {
+            "id": "caedce7b-2635-49aa-bb74-353c2411a9b5",
+            "content": "Prepare presentation",
+            "completed": true,
+            "category_id": "ff706009-467f-483c-9d4e-6268f39ddd90"
+        },
+        {
+            "id": "11af1b6c-55b6-473b-9d5d-d1b065607db4",
+            "content": "Submit expense report",
+            "completed": false,
+            "category_id": "259d027b-3359-4b5e-ad27-e6297ba48de1"
+        },
+        {
+            "id": "745a4f6c-5e64-42b2-a97c-80e1f27f7a31",
+            "content": "Read a book",
+            "completed": false,
+            "category_id": null
+        },
+        {
+            "id": "43f95b29-e6db-4e74-b5d0-529365eacb14",
+            "content": "Go for a walk",
+            "completed": true,
+            "category_id": null
+        },
+        {
+            "id": "ae15de64-8e5a-4d3c-8b3b-493f07ef9378",
+            "content": "Practice coding",
+            "completed": false,
+            "category_id": null
+        },
+        {
+            "id": "c9f47a1e-ec0f-47b4-8a32-3b84168dbdf4",
+            "content": "Draft report for Category 1",
+            "completed": false,
+            "category_id": "dbf76936-91d4-41f8-bddc-e1fe201cca38"
+        },
+        {
+            "id": "ff2ef9f6-5f95-4bc5-9665-bab7a8b05431",
+            "content": "Research topics for Category 3",
+            "completed": false,
+            "category_id": "1fcd1662-0267-48dc-9ef7-7bc4e36dfc66"
+        }
+    ]
+}

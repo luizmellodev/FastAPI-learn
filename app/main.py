@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.todo import router as todo_router
+from app.routers.categories import router as category_router
 from app.core.config import CORS_ORIGIN
 
 app = FastAPI()
@@ -14,3 +15,4 @@ app.add_middleware(
 )
 
 app.include_router(todo_router)
+app.include_router(category_router)
