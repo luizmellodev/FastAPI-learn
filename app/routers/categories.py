@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from typing import List
 from app.model import Category, UpdateCategory, CategoryWithTodos, Todo
@@ -21,7 +22,7 @@ async def get_categories_with_todos() -> List[CategoryWithTodos]:
     outros_category_id = None
     if "Outros" not in [category['name'] for category in categories]:
         outros_category_id = str(uuid.uuid4())
-        categories_dict[outros_category_id] = CategoryWithTodos(id=outros_category_id, name="Outros", todos=[])
+        categories_dict[outros_category_id] = CategoryWithTodos(id=outros_category_id, name="Outros", todos=[], created_at=datetime.now())
 
     for todo in todos:
         category_id = todo.get('category_id')
