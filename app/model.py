@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 class Category(BaseModel):
     id: UUID = uuid4()
     name: str
-    created_at: datetime.datetime = datetime.datetime.now()
+    created_at: datetime.datetime
 
 class UpdateCategory(BaseModel):
     name: Optional[str] = None
@@ -15,8 +15,8 @@ class Todo(BaseModel):
     id: UUID = uuid4()
     content: str
     completed: bool = False
-    created_at: datetime.datetime = datetime.datetime.now()
-    category_id: Optional[UUID] = None
+    created_at: Optional[str]
+    category_id: Optional[str]
 
 class UpdateTodo(BaseModel):
     content: Optional[str] = None
