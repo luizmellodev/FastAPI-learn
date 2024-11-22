@@ -3,7 +3,7 @@
         {
             "id": "f003d2a5-d17f-44a0-bf49-e1e187c44b1a",
             "content": "Attend team meeting teste",
-            "completed": false,
+            "completed": true,
             "category_id": "dec79734-dab1-4b0a-b720-d8479fb0a78e",
             "created_at": "2024-07-10T00:00:00Z"
         },
@@ -23,7 +23,7 @@
         },
         {
             "id": "11af1b6c-55b6-473b-9d5d-d1b065607db4",
-            "content": "Submit expense report",
+            "content": "Submit expense report test",
             "completed": false,
             "category_id": "259d027b-3359-4b5e-ad27-e6297ba48de1",
             "created_at": "2024-02-10T00:00:00Z"
@@ -45,7 +45,7 @@
         {
             "id": "c9f47a1e-ec0f-47b4-8a32-3b84168dbdf4",
             "content": "Draft report for Category 1",
-            "completed": true,
+            "completed": false,
             "category_id": "dbf76936-91d4-41f8-bddc-e1fe201cca38",
             "created_at": "2024-02-10T00:00:00Z"
         },
@@ -65,9 +65,51 @@
         },
         {
             "id": "3bfcce9a-8adb-4d59-9bd5-69cc7d331e02",
-            "content": "Lal\u00e1 Lal\u00e1",
-            "completed": true,
+            "content": "Lal\u00e1 Lal\u00e1 teste!",
+            "completed": false,
             "created_at": "2024-10-13T20:30:59.102657",
+            "category_id": "dbf76936-91d4-41f8-bddc-e1fe201cca38"
+        },
+        {
+            "id": "b86d1a73-416f-4fbe-a47e-a3a0f49a89f4",
+            "content": "Test haha",
+            "completed": false,
+            "created_at": "2024-11-22T17:42:03.934444",
+            "category_id": "259d027b-3359-4b5e-ad27-e6297ba48de1"
+        },
+        {
+            "id": "4c1d2a31-7695-42d9-a194-e7d9a54df792",
+            "content": "Saudada",
+            "completed": false,
+            "created_at": "2024-11-22T17:42:06.773998",
+            "category_id": "ff706009-467f-483c-9d4e-6268f39ddd90"
+        },
+        {
+            "id": "2cb3802e-6bd6-40f1-8a4b-37ed79f6ef42",
+            "content": "Aldallala",
+            "completed": false,
+            "created_at": "2024-11-22T17:42:10.993428",
+            "category_id": "dbf76936-91d4-41f8-bddc-e1fe201cca38"
+        },
+        {
+            "id": "ae61899f-fead-4fd5-9d6d-ad90b8f9e3f7",
+            "content": "Sadasdasd",
+            "completed": false,
+            "created_at": "2024-11-22T17:42:14.132013",
+            "category_id": "1fcd1662-0267-48dc-9ef7-7bc4e36dfc66"
+        },
+        {
+            "id": "5c0beb0c-6d2c-4b99-9a7a-db50bffaf67d",
+            "content": "Kmkmkmkmasdad",
+            "completed": false,
+            "created_at": "2024-11-22T17:43:07.980425",
+            "category_id": "7312859b-b778-4624-8402-9cb8a4d0d850"
+        },
+        {
+            "id": "deba3725-82ee-44b5-9265-7f2c6c81c2fc",
+            "content": "Teste anima\u00e7\u00e3o",
+            "completed": false,
+            "created_at": "2024-11-22T17:43:16.125692",
             "category_id": "dbf76936-91d4-41f8-bddc-e1fe201cca38"
         }
     ]
