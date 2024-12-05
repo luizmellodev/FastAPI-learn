@@ -1,10 +1,11 @@
 import datetime
-from fastapi import APIRouter, HTTPException
-from typing import List, Optional
-from app.model import Todo, UpdateTodo
-from app.db.database import load_todos, save_todos, load_categories, save_categories
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List
+from app.schemas.todo import Todo, UpdateTodo
+from app.db.database_service import load_todos, save_todos, load_categories, save_categories
 from uuid import UUID, uuid4
-import json
+from app.core.security import get_current_active_user
+from app.schemas.user import User
 
 router = APIRouter()
 
@@ -13,12 +14,15 @@ async def read_root() -> dict:
     return {"message": "Welcome to your todo list."}
 
 @router.get("/todos", response_model=List[Todo], tags=["todos"])
-async def get_todos() -> List[Todo]:
+async def get_todos(current_user: User = Depends(get_current_active_user)) -> List[Todo]:
+    print(f"User {current_user.username} is authenticated.")
     todos_data = load_todos()
+    
     return todos_data
 
 @router.get("/todos/{id}", response_model=Todo, tags=["todos"])
-async def get_todo_by_id(id: UUID) -> Todo:
+async def get_todo_by_id(id: UUID, current_user: User = Depends(get_current_active_user)) -> Todo:
+    print(f"User {current_user.username} is authenticated.")
     todos = load_todos()
     todo = next((todo for todo in todos if todo['id'] == str(id)), None)
     if todo is None:
@@ -26,7 +30,8 @@ async def get_todo_by_id(id: UUID) -> Todo:
     return todo
 
 @router.post("/todos", response_model=Todo, tags=["todos"], status_code=201)
-async def add_todo(todo: Todo) -> Todo:
+async def add_todo(todo: Todo, current_user: User = Depends(get_current_active_user)) -> Todo:
+    print(f"User {current_user.username} is authenticated.")
     todos = load_todos()
     
     if not todo.id:
@@ -50,19 +55,21 @@ async def add_todo(todo: Todo) -> Todo:
             raise HTTPException(status_code=500, detail="Error trying to find a 'default' category.")
         todo.category_id = defaultCategory['id']
 
-    # Convert datetime to ISO 8601 string
     if todo.created_at:
         todo.created_at = datetime.datetime.now().isoformat()
     else:
         todo.created_at = datetime.datetime.now().isoformat()
+    
+    todo.username = current_user.username
 
-    todos.append(todo.dict())
+    todos.append(todo.model_dump())
     save_todos(todos)
     
     return todo
 
 @router.put("/todos/{id}", response_model=Todo, tags=["todos"])
-async def update_todo(id: UUID, updated_todo: UpdateTodo) -> Todo:
+async def update_todo(id: UUID, updated_todo: UpdateTodo, current_user: User = Depends(get_current_active_user)) -> Todo:
+    print(f"User {current_user.username} is authenticated.")
     todos = load_todos()
     
     todo = next((todo for todo in todos if todo['id'] == str(id)), None)
@@ -70,7 +77,6 @@ async def update_todo(id: UUID, updated_todo: UpdateTodo) -> Todo:
     if not todo:
         raise HTTPException(status_code=404, detail=f"Todo with id {id} not found.")
     
-    # Update the todo with provided fields
     if updated_todo.content is not None:
         todo['content'] = updated_todo.content
     if updated_todo.completed is not None:
@@ -81,13 +87,15 @@ async def update_todo(id: UUID, updated_todo: UpdateTodo) -> Todo:
     save_todos(todos)
     return todo
 
-@router.delete("/todos/{id}", tags=["todos"])
-async def delete_todo(id: UUID) -> dict:
+@router.delete("/todos/{id}", tags=["todos"], response_model=Todo)
+async def delete_todo(id: UUID, current_user: User = Depends(get_current_active_user)) -> Todo:
+    print(f"User {current_user.username} is authenticated.")
     todos = load_todos()
-    new_todos = [todo for todo in todos if todo['id'] != str(id)]
+    todo_to_delete = next((todo for todo in todos if todo['id'] == str(id)), None)
     
-    if len(new_todos) == len(todos):
+    if not todo_to_delete:
         raise HTTPException(status_code=404, detail=f"Todo with id {id} not found.")
     
+    new_todos = [todo for todo in todos if todo['id'] != str(id)]
     save_todos(new_todos)
-    return {"message": f"Todo with id {id} has been removed."}
+    return todo_to_delete
