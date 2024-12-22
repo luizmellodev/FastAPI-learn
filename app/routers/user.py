@@ -33,13 +33,10 @@ async def create_new_user(user: UserCreate) -> UserCreate:
     new_user = create_user(user)
     return new_user
 
-@router.get("/mytoken/")
-async def read_items(token: str = Depends(oauth2_scheme)):
-    verify = verify_token(token)
-    if not verify:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return {"token": token}
+@router.get("/mytoken", tags=["users"], status_code=200)
+async def verifyToken(token: str = Depends(oauth2_scheme)):
+    print("Token recebido:")
+    print(token)
+    print("Verificando token...")
+    print(verify_token(token))
+    return verify_token(token)
