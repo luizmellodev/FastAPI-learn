@@ -91,8 +91,6 @@ async def delete_category(id: UUID, current_user: User = Depends(get_current_act
     return {"message": f"Category with id {id} has been removed."}
 
 
-
-# Função para verificar e adicionar a categoria "Outros" se necessário
 def get_outros_category_id(categories, categories_dict):
     if "Outros" not in [category['name'] for category in categories]:
         outros_category_id = str(uuid.uuid4())
@@ -100,7 +98,6 @@ def get_outros_category_id(categories, categories_dict):
         return outros_category_id
     return None
 
-# Função para adicionar o todo à categoria correspondente
 def add_todo_to_category(category_id, categories_dict, todo):
     if category_id in categories_dict:
         categories_dict[category_id].todos.append(Todo(**todo))
