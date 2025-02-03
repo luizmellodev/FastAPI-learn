@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import CORS_ORIGIN
-
-from app.routers.todo import router as todo_router
-from app.routers.categories import router as category_router
-from app.routers.user import router as user_router
+from app.api import auth
 
 app = FastAPI()
 
@@ -15,7 +12,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+app = FastAPI()
 
-app.include_router(todo_router)
-app.include_router(category_router)
-app.include_router(user_router)
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
