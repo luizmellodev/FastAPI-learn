@@ -31,9 +31,13 @@ def get_password_hash(password):
 
 def authenticate_user(username: str, password: str):
     user = get_user(username)
+    print("User: ")
+    print(user)
     if not user:
+        print("User not found")
         return False
     if not verify_password(password, user.hashed_password):
+        print("Password incorrect")
         return False
     return user
 
@@ -48,7 +52,10 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def get_user(username: str):
+    print("Getting user")
+    print("Username informado: " + username)
     if username in user_db:
+        print("User found")
         user_dict = user_db[username]
         return UserInDB(**user_dict)
 
@@ -81,7 +88,6 @@ async def get_current_active_user(
 
 def create_user(user: UserCreate) -> Dict[str, Any]:
     users = load_users()
-
     if user.username in users:
         raise HTTPException(status_code=400, detail="User with this username already exists.")
 
@@ -91,8 +97,7 @@ def create_user(user: UserCreate) -> Dict[str, Any]:
         username=user.username,
         name=user.name,
         hashed_password=hashed_password,
-        disabled=user.disabled
-        
+        disabled=False
     )
 
     users[user.username] = new_user.model_dump()
