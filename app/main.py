@@ -5,6 +5,7 @@ from app.core.config import CORS_ORIGIN
 from app.routers.todo import router as todo_router
 from app.routers.categories import router as category_router
 from app.routers.user import router as user_router
+from app.db.database import create_db_and_tables
 
 app = FastAPI()
 
@@ -19,3 +20,5 @@ app.add_middleware(
 app.include_router(todo_router)
 app.include_router(category_router)
 app.include_router(user_router)
+
+create_db_and_tables()

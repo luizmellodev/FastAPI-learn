@@ -29,3 +29,5 @@ htmlcov/
 
 users.json
 todos.json
+categories.json
+database.db
