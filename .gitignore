@@ -26,3 +26,8 @@ htmlcov/
 .coverage
 *.cover
 *.py,cover
+
+users.json
+todos.json
+categories.json
+database.db

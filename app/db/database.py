@@ -1,40 +1,18 @@
-import json
-from typing import List
-from uuid import UUID
-from fastapi import HTTPException
-from app.model import Todo, Category
+from typing import Annotated
+from fastapi import Depends
+from sqlmodel import create_engine, Session, SQLModel
 
-def load_todos() -> List[Todo]:
-    try:
-        with open('todos.json') as f:
-            data = json.load(f)
-            return data['todos']
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="todos.json not found.")
-    
-def load_categories() -> List[Category]:
-    try:
-        with open('categories.json') as f:
-            data = json.load(f)
-            return data['categories']
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="categories.json not found.")
+sqlite_file_name = "database.db"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
 
-def save_todos(todos: List[dict]) -> None:
-    def convert_uuids(obj):
-        if isinstance(obj, dict):
-            return {k: convert_uuids(v) for k, v in obj.items()}
-        elif isinstance(obj, list):
-            return [convert_uuids(i) for i in obj]
-        elif isinstance(obj, UUID):
-            return str(obj)
-        else:
-            return obj
+connect_args = {"check_same_thread": False}
+engine = create_engine(sqlite_url, connect_args=connect_args)
 
-    todos = convert_uuids(todos)
-    with open('todos.json', 'w') as f:
-        json.dump({"todos": todos}, f, indent=4)
+def create_db_and_tables():
+    SQLModel.metadata.create_all(engine)
 
-def save_categories(categories: List[dict]) -> None:
-    with open('categories.json', 'w') as f:
-        json.dump({"categories": categories}, f, indent=4)
+def get_db():
+    with Session(engine) as session:
+        yield session
+
+SessionDep = Annotated[Session, Depends(get_db)]
