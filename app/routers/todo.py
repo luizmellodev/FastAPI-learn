@@ -57,12 +57,15 @@ async def update_todo(session: SessionDep, id: str, updated_todo: UpdateTodo, cu
     session.refresh(todo)
     return todo
 
-@router.delete("/todos/{id}", tags=["todos"], response_model=Todo)
-async def delete_todo(session: SessionDep, id: str, current_user: User = Depends(get_current_active_user)) -> Todo:
-    todo = session.get(Todo, id)
-    if not todo:
-        raise HTTPException(status_code=404, detail=f"Todo with id {id} not found.")
+@router.delete("/todos", tags=["todos"], response_model=List[Todo])
+async def delete_todos(session: SessionDep, ids: List[str], current_user: User = Depends(get_current_active_user)) -> List[Todo]:
+    todos_to_delete = session.exec(select(Todo).where(Todo.id.in_(ids))).all()
     
-    session.delete(todo)
+    if not todos_to_delete:
+        raise HTTPException(status_code=404, detail="No Todos found for the provided IDs.")
+    
+    for todo in todos_to_delete:
+        session.delete(todo)
+    
     session.commit()
-    return todo
+    return todos_to_delete
