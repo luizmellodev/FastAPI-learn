@@ -12,6 +12,10 @@ class Category(CategoryBase, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     todos: List["Todo"] = Relationship(back_populates="category")
 
+# Model para requisição de exclusão de ToDos
+class DeleteTodosRequest(SQLModel):
+    ids: List[str]
+
 # Update Model para Categoria
 class UpdateCategory(SQLModel):
     name: Optional[str] = None

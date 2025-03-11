@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List
 from uuid import UUID
-from app.models import Todo, UpdateTodo, User, Category, CategoryWithTodos
+from app.models import DeleteTodosRequest, Todo, UpdateTodo, User, Category, CategoryWithTodos
 from app.db.database import get_db, SessionDep
 from app.core.security import get_current_active_user
 from sqlmodel import select
@@ -57,9 +57,13 @@ async def update_todo(session: SessionDep, id: str, updated_todo: UpdateTodo, cu
     session.refresh(todo)
     return todo
 
-@router.delete("/todos", tags=["todos"], response_model=List[Todo])
-async def delete_todos(session: SessionDep, ids: List[str], current_user: User = Depends(get_current_active_user)) -> List[Todo]:
-    todos_to_delete = session.exec(select(Todo).where(Todo.id.in_(ids))).all()
+@router.delete("/todos/", tags=["todos"], response_model=List[Todo])
+async def delete_todos(
+    session: SessionDep,
+    request: DeleteTodosRequest,
+    current_user: User = Depends(get_current_active_user)
+) -> List[Todo]:
+    todos_to_delete = session.exec(select(Todo).where(Todo.id.in_(request.ids))).all()
     
     if not todos_to_delete:
         raise HTTPException(status_code=404, detail="No Todos found for the provided IDs.")
