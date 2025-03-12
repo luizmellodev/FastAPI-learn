@@ -11,7 +11,7 @@ router = APIRouter()
 
 @router.get("/categories", response_model=List[Category], tags=["categories"])
 async def get_categories(session: SessionDep, current_user: User = Depends(get_current_active_user)) -> List[Category]:
-    categories = session.exec(select(Category)).all()
+    categories = session.exec(select(Category).where(Category.user_id == current_user.id)).all()
     
     return categories
 
