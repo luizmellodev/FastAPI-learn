@@ -1,82 +1,58 @@
-from datetime import datetime
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from typing import List
-from app.model import Category, UpdateCategory, CategoryWithTodos, Todo
-from app.db.database import load_categories, save_categories ,load_todos
 from uuid import UUID
-import uuid
+from datetime import datetime
+from sqlmodel import select
+from app.models import Category, UpdateCategory, User, CategoryWithTodos
+from app.db.database import get_db, SessionDep
+from app.core.security import get_current_active_user
 
 router = APIRouter()
 
 @router.get("/categories", response_model=List[Category], tags=["categories"])
-async def get_categories() -> List[Category]:
-    return load_categories()
+async def get_categories(session: SessionDep, current_user: User = Depends(get_current_active_user)) -> List[Category]:
+    categories = session.exec(select(Category).where(Category.user_id == current_user.id)).all()
+    
+    return categories
 
-@router.get("/categories_with_todos", response_model=List[CategoryWithTodos], tags=["categories"])
-async def get_categories_with_todos() -> List[CategoryWithTodos]:
-    categories = load_categories()
-    todos = load_todos() 
+@router.post("/categories", response_model=CategoryWithTodos, tags=["categories"], status_code=201)
+async def add_category(category: Category, session: SessionDep, current_user: User = Depends(get_current_active_user)) -> Category:
+    category.id = str(UUID(category.id)) if isinstance(category.id, UUID) else str(category.id)
 
-    categories_dict = {category['id']: CategoryWithTodos(**category, todos=[]) for category in categories}
+    if isinstance(category.created_at, str):
+        try:
+            category.created_at = datetime.strptime(category.created_at, "%Y-%m-%d").date()
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD.")
 
-    outros_category_id = None
-    if "Outros" not in [category['name'] for category in categories]:
-        outros_category_id = str(uuid.uuid4())
-        categories_dict[outros_category_id] = CategoryWithTodos(id=outros_category_id, name="Outros", todos=[], created_at=datetime.now())
+    session.add(category)
+    session.commit()
+    session.refresh(category)
 
-    for todo in todos:
-        category_id = todo.get('category_id')
-        if category_id:
-            if category_id in categories_dict:
-                categories_dict[category_id].todos.append(Todo(**todo))
-        else:
-            if outros_category_id:
-                categories_dict[outros_category_id].todos.append(Todo(**todo))
-
-    return list(categories_dict.values())
-
-
-@router.get("/categories/{id}", response_model=Category, tags=["categories"])
-async def get_category_by_id(id: UUID) -> Category:
-    categories = load_categories()
-    category = next((category for category in categories if category['id'] == str(id)), None)
-    if category is None:
-        raise HTTPException(status_code=404, detail=f"Category with id {id} not found.")
-    return category
-
-@router.post("/categories", response_model=Category, tags=["categories"], status_code=201)
-async def add_category(category: Category) -> Category:
-    categories = load_categories()
-    if any(existing_category['id'] == category.id for existing_category in categories):
-        raise HTTPException(status_code=400, detail="Category with this ID already exists.")
-
-    categories.append(category.model_dump())
-    save_categories(categories)
-    return category
+    return CategoryWithTodos(
+        id=category.id,
+        name=category.name,
+        created_at=category.created_at,
+        todos=[]
+    )
 
 @router.put("/categories/{id}", response_model=Category, tags=["categories"])
-async def update_category(id: UUID, updated_category: UpdateCategory) -> Category:
-    categories = load_categories()
-    
-    category = next((category for category in categories if category['id'] == str(id)), None)
-    
-    if category is None:
+async def update_category(id: str, updated_category: UpdateCategory, session: SessionDep, current_user: User = Depends(get_current_active_user)) -> Category:
+    category = session.get(Category, id)
+    if not category:
         raise HTTPException(status_code=404, detail=f"Category with id {id} not found.")
-    
-    if updated_category.name is not None:
-        category['name'] = updated_category.name
-
-    save_categories(categories)
+    if updated_category.name:
+        category.name = updated_category.name
+    session.commit()
+    session.refresh(category)
     
     return category
 
 @router.delete("/categories/{id}", tags=["categories"])
-async def delete_category(id: UUID) -> dict:
-    categories = load_categories()
-    new_categories = [category for category in categories if category['id'] != str(id)]
-
-    if len(new_categories) == len(categories):
+async def delete_category(id: str, session: SessionDep, current_user: User = Depends(get_current_active_user)):
+    category = session.get(Category, id)
+    if not category:
         raise HTTPException(status_code=404, detail=f"Category with id {id} not found.")
-
-    save_categories(new_categories)
+    session.delete(category)
+    session.commit()
     return {"message": f"Category with id {id} has been removed."}
