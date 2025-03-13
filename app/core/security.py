@@ -12,6 +12,10 @@ from dotenv import load_dotenv
 import os
 import jwt
 
+# Armazena tokens inválidos (pode ser substituído por um banco de dados)
+REVOKED_TOKENS = set()
+
+
 # Carregar variáveis de ambiente
 load_dotenv()
 
@@ -61,27 +65,38 @@ async def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+
+    # Verifica se o token está na blacklist
+    if is_token_revoked(token):
+        raise HTTPException(status_code=401, detail="Token has been revoked")
+
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if not username:
             raise credentials_exception
-        token_data = TokenData(username=username)
     except InvalidTokenError:
         raise credentials_exception
 
-    user = get_user(db, token_data.username)
+    user = get_user(db, username)
     if not user:
         raise credentials_exception
     return user
 
+
 # Verificar se o usuário está ativo
 async def get_current_active_user(
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    token: str = Depends(oauth2_scheme)
 ) -> User:
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
+    
+    if is_token_revoked(token):
+        raise HTTPException(status_code=401, detail="Token has been revoked")
+    
     return current_user
+
 
 # Criar novo usuário no banco
 def create_user(db: Session, user: UserCreate) -> User:
@@ -112,3 +127,12 @@ def verify_token(token: str) -> bool:
         return bool(payload.get("sub"))
     except InvalidTokenError:
         return False
+    
+
+# Adicionar token à blacklist
+def revoke_token(token: str):
+    REVOKED_TOKENS.add(token)
+
+# Verificar se o token foi revogado
+def is_token_revoked(token: str) -> bool:
+    return token in REVOKED_TOKENS

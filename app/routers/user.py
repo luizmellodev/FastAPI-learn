@@ -4,7 +4,7 @@ from app.models import User, Token, UserCreate
 from app.core.dependency import oauth2_scheme, router
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
-from app.core.security import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user, create_user, verify_token
+from app.core.security import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user, create_user, revoke_token, verify_token
 from app.db.database import SessionDep
 
 @router.get("/users/me", response_model=User, tags=["users"])
@@ -48,3 +48,9 @@ async def verifyToken(token: str = Depends(oauth2_scheme)):
     print("Verificando token...")
     print(verify_token(token))
     return verify_token(token)
+
+@router.post("/logout", tags=["users"])
+async def logout(token: str = Depends(oauth2_scheme)):
+    print("Revogando token...")
+    revoke_token(token)
+    return {"message": "Logout successful"}
