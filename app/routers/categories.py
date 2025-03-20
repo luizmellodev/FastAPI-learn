@@ -9,6 +9,7 @@ from app.core.security import get_current_active_user
 
 router = APIRouter()
 
+# Need to fix that route.
 @router.get("/categories", response_model=List[Category], tags=["categories"])
 async def get_categories(session: SessionDep, current_user: User = Depends(get_current_active_user)) -> List[Category]:
     categories = session.exec(select(Category).where(Category.user_id == current_user.id)).all()
