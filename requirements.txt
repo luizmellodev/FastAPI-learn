@@ -1,4 +1,4 @@
-fastapi
 uvicorn
+fastapi
 pydantic
-sqlmodel
+maturin
