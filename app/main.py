@@ -1,3 +1,5 @@
+# app/main.py
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import CORS_ORIGIN
@@ -21,4 +23,7 @@ app.include_router(todo_router)
 app.include_router(category_router)
 app.include_router(user_router)
 
-create_db_and_tables()
+
+@app.on_event("startup")
+def startup_event():
+    create_db_and_tables()
