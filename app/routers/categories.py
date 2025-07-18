@@ -15,7 +15,6 @@ async def get_categories(
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_db)
 ) -> List[Category]:
-    # Busca todas as categorias do usuário atual
     categories = session.exec(select(Category).where(
         Category.username == current_user.username)).all()
     return categories
@@ -26,10 +25,11 @@ async def add_category(
     category: Category,
     current_user: User = Depends(get_current_active_user),
     session: Session = Depends(get_db)
-) -> Category:
+) -> CategoryWithTodos:
+    category.username = current_user.username
+
     category.id = str(UUID(category.id)) if isinstance(
         category.id, UUID) else str(category.id)
-    category.username = current_user.username  # Define o dono da categoria
 
     if isinstance(category.created_at, str):
         try:
@@ -64,7 +64,6 @@ async def update_category(
         raise HTTPException(
             status_code=404, detail=f"Category with id {id} not found")
 
-    # Verifica se a categoria pertence ao usuário
     if category.username != current_user.username:
         raise HTTPException(
             status_code=403, detail="Not authorized to update this category")
@@ -88,7 +87,6 @@ async def delete_category(
         raise HTTPException(
             status_code=404, detail=f"Category with id {id} not found")
 
-    # Verifica se a categoria pertence ao usuário
     if category.username != current_user.username:
         raise HTTPException(
             status_code=403, detail="Not authorized to delete this category")
