@@ -1,105 +1,80 @@
 """
 Database models for the Todo List application.
 
-This module defines all SQLModel models used in the application:
-- Category models (CategoryBase, Category, UpdateCategory, CategoryWithTodos)
-- Todo models (TodoBase, Todo, UpdateTodo)
-- User models (UserBase, User, UserCreate)
-- Authentication models (Token, TokenData)
-
-All models use UUID strings as primary keys and include proper relationships
-between todos and categories.
+This module defines SQLModel models that serve both as database tables and Pydantic models
+for request/response validation. Models are organized by feature (Todo, Category, User)
+with additional models for specific use cases like updates and authentication.
 """
 
-# Standard library imports
 from datetime import date
 from typing import Optional, List
 from uuid import uuid4
 
-# Third-party imports
 from sqlmodel import SQLModel, Field, Relationship
 
 
-class CategoryBase(SQLModel):
-    """Base model for categories with common fields."""
+class Category(SQLModel, table=True):
+    """Database and API model for categories."""
 
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     name: str
     created_at: date
     username: str
-
-
-class Category(CategoryBase, table=True):
-    """Database model for categories with relationships to todos."""
-
-    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     todos: List["Todo"] = Relationship(back_populates="category")
 
 
-class DeleteTodosRequest(SQLModel):
-    """Request model for bulk todo deletion."""
-
-    ids: List[str]
-
-
 class UpdateCategory(SQLModel):
-    """Request model for category updates."""
+    """Request model for category updates with optional fields."""
 
     name: Optional[str] = None
 
 
-class CategoryWithTodos(CategoryBase):
+class CategoryWithTodos(SQLModel):
     """Response model for categories that includes their todos."""
 
     id: str
+    name: str
+    created_at: date
+    username: str
     todos: List["Todo"]
 
 
-class TodoBase(SQLModel):
-    """Base model for todos with common fields."""
+class Todo(SQLModel, table=True):
+    """Database and API model for todos."""
 
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     username: str
     content: str
     completed: bool = Field(default=False)
     created_at: date
-
-
-class Todo(TodoBase, table=True):
-    """Database model for todos with relationships to categories."""
-
-    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
     category_id: Optional[str] = Field(default=None, foreign_key="category.id")
     category: Optional[Category] = Relationship(back_populates="todos")
 
 
 class UpdateTodo(SQLModel):
-    """Request model for todo updates."""
+    """Request model for todo updates with optional fields."""
 
     content: Optional[str] = None
     completed: Optional[bool] = None
     category_id: Optional[str] = None
 
 
-class UserBase(SQLModel):
-    """Base model for users with common fields."""
-
-    username: str
-    name: str
-
-
-class User(UserBase, table=True):
-    """Database model for users."""
+class User(SQLModel, table=True):
+    """Database and API model for users."""
 
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    username: str
+    name: str
     hashed_password: str
     disabled: Optional[bool] = Field(default=False)
 
 
 class UserCreate(SQLModel):
-    """Request model for user registration."""
+    """Request model for user registration that includes plain text password."""
 
     username: str
     name: str
-    password: str
+    password: str  # Plain text password that will be hashed
 
 
 class Token(SQLModel):
