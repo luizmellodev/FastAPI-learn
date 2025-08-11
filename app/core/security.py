@@ -8,6 +8,7 @@ from app.models import User, UserCreate
 from app.core.dependency import oauth2_scheme
 from app.db.database import get_db
 
+# Please use a .env file to store the secret key
 SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
