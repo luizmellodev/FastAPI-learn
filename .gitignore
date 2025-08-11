@@ -1,36 +1,44 @@
-# Ignore virtual environments
-venv/
-.venv/
-env1/
-
-# Ignore Python cache files
+# Python
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
 
-# Ignore environment-specific files
-.env
-.env.*
+# Virtual Environment
+venv/
+env/
+ENV/
 
-# Ignore macOS-specific files
-.DS_Store
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Ignore logs
+# SQLite
+*.db
+*.sqlite3
+
+# Logs
 *.log
 
-# Ignore bytecode files
-*.pyc
-
-# Ignore coverage reports
-htmlcov/
+# Coverage
 .coverage
-*.cover
-*.py,cover
+htmlcov/
+coverage.xml
 
-users.json
-todos.json
-categories.json
-database.db
-markdown.md
-text.txt
+# Environment variables
+.env
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+
+# Mac
+.DS_Store

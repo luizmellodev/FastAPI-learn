@@ -1,3 +1,6 @@
+# app/main.py
+
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import CORS_ORIGIN
@@ -7,7 +10,16 @@ from app.routers.categories import router as category_router
 from app.routers.user import router as user_router
 from app.db.database import create_db_and_tables
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Código que roda na inicialização
+    create_db_and_tables()
+    yield
+    # Código que roda no shutdown
+    pass
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,5 +32,3 @@ app.add_middleware(
 app.include_router(todo_router)
 app.include_router(category_router)
 app.include_router(user_router)
-
-create_db_and_tables()
