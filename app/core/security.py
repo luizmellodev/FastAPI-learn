@@ -8,8 +8,7 @@ from app.models import User, UserCreate
 from app.core.dependency import oauth2_scheme
 from app.db.database import get_db
 
-# Configurações de segurança
-SECRET_KEY = "your-secret-key"  # Em produção, use uma chave secreta mais segura
+SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -49,13 +48,11 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
 
 
 def create_user(db: Session, user: UserCreate) -> User:
-    # Verificar se o usuário já existe
     existing_user = get_user(db, user.username)
     if existing_user:
         raise HTTPException(
             status_code=400, detail="Username already registered")
 
-    # Criar novo usuário
     hashed_password = get_password_hash(user.password)
     db_user = User(
         username=user.username,
@@ -106,12 +103,8 @@ def verify_token(token: str) -> bool:
 
 
 def revoke_token(token: str) -> None:
-    # Aqui você implementaria a lógica de revogação do token
-    # Por exemplo, adicionando-o a uma lista negra
     pass
 
 
 def is_token_revoked(token: str) -> bool:
-    # Aqui você implementaria a lógica para verificar se um token foi revogado
-    # Por exemplo, verificando em uma lista negra
     return False

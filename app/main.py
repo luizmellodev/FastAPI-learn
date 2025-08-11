@@ -13,10 +13,8 @@ from app.db.database import create_db_and_tables
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Código que roda na inicialização
     create_db_and_tables()
     yield
-    # Código que roda no shutdown
     pass
 
 app = FastAPI(lifespan=lifespan)

@@ -22,7 +22,6 @@ async def test_create_category(client, test_token):
 
 @pytest.mark.asyncio
 async def test_list_categories_with_todos(client, test_token, session):
-    # Criar uma categoria
     category = Category(
         name="Test Category",
         created_at=date.today(),
@@ -31,7 +30,6 @@ async def test_list_categories_with_todos(client, test_token, session):
     session.add(category)
     session.commit()
 
-    # Criar um TODO nessa categoria
     todo = Todo(
         username="testuser",
         content="Test todo",
@@ -55,7 +53,6 @@ async def test_list_categories_with_todos(client, test_token, session):
 
 @pytest.mark.asyncio
 async def test_list_empty_category(client, test_token, session):
-    # Criar uma categoria sem TODOs
     category = Category(
         name="Empty Category",
         created_at=date.today(),
@@ -76,7 +73,6 @@ async def test_list_empty_category(client, test_token, session):
 
 @pytest.mark.asyncio
 async def test_update_category(client, test_token, session):
-    # Criar uma categoria para atualizar
     category = Category(
         name="Old Name",
         created_at=date.today(),
@@ -99,7 +95,6 @@ async def test_update_category(client, test_token, session):
 
 @pytest.mark.asyncio
 async def test_delete_category(client, test_token, session):
-    # Criar uma categoria para deletar
     category = Category(
         name="To Delete",
         created_at=date.today(),
@@ -112,7 +107,6 @@ async def test_delete_category(client, test_token, session):
     response = client.delete(f"/categories/{category.id}", headers=headers)
     assert response.status_code == 200
 
-    # Verificar se a categoria foi realmente deletada
     response = client.get("/categories_with_todos", headers=headers)
     assert response.status_code == 200
     data = response.json()

@@ -9,9 +9,6 @@ from app.db.database import get_db
 from app.core.security import create_access_token
 from app.models import User
 
-# Cria um banco de dados em memória para testes
-
-
 @pytest.fixture(name="session")
 def session_fixture():
     engine = create_engine(
@@ -23,9 +20,6 @@ def session_fixture():
     with Session(engine) as session:
         yield session
 
-# Sobrescreve a dependência do banco de dados
-
-
 @pytest.fixture(name="client")
 def client_fixture(session: Session):
     def get_session_override():
@@ -35,9 +29,6 @@ def client_fixture(session: Session):
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
-
-# Fixture para criar um usuário de teste
-
 
 @pytest.fixture(name="test_user")
 def test_user_fixture(session: Session):
@@ -51,9 +42,6 @@ def test_user_fixture(session: Session):
     session.add(user)
     session.commit()
     return user
-
-# Fixture para gerar um token de acesso
-
 
 @pytest.fixture(name="test_token")
 def test_token_fixture(test_user: User):
