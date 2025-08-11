@@ -10,7 +10,10 @@ install-dev:
 	source venv/bin/activate && pip install -r requirements-dev.txt
 
 freeze:
-	source venv/bin/activate && pip freeze > requirements.txt
+	source venv/bin/activate && pip install -r requirements.txt && pip freeze > requirements.txt
+
+freeze-dev:
+	source venv/bin/activate && pip install -r requirements-dev.txt && pip freeze > requirements-dev.txt
 
 format:
 	source venv/bin/activate && black app
