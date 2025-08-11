@@ -8,10 +8,7 @@ from app.models import User, UserCreate
 from app.core.dependency import oauth2_scheme
 from app.db.database import get_db
 
-# Please use a .env file to store the secret key
-SECRET_KEY = "your-secret-key"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -29,7 +26,9 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=15)
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+        )
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -51,15 +50,14 @@ def authenticate_user(db: Session, username: str, password: str) -> Optional[Use
 def create_user(db: Session, user: UserCreate) -> User:
     existing_user = get_user(db, user.username)
     if existing_user:
-        raise HTTPException(
-            status_code=400, detail="Username already registered")
+        raise HTTPException(status_code=400, detail="Username already registered")
 
     hashed_password = get_password_hash(user.password)
     db_user = User(
         username=user.username,
         name=user.name,
         hashed_password=hashed_password,
-        disabled=False
+        disabled=False,
     )
 
     db.add(db_user)
@@ -68,7 +66,9 @@ def create_user(db: Session, user: UserCreate) -> User:
     return db_user
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -89,7 +89,9 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     return user
 
 
-async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
+async def get_current_active_user(
+    current_user: User = Depends(get_current_user),
+) -> User:
     if current_user.disabled:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user

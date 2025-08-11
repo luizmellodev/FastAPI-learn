@@ -5,6 +5,7 @@ A secure and efficient Todo List API built with FastAPI and SQLModel, featuring 
 The API leverages SQLite as the database, using SQLModel—a modern ORM built on top of SQLAlchemy and Pydantic—to handle database operations efficiently.
 
 ## Key Features
+
 - Secure authentication using OAuth2.0 Password Flow with JWT Tokens
 - Password hashing with bcrypt for enhanced security
 - Full CRUD operations for task management
@@ -12,7 +13,19 @@ The API leverages SQLite as the database, using SQLModel—a modern ORM built on
 - SQLite database with SQLModel ORM
 - FastAPI-based architecture for high performance and built-in OpenAPI documentation
 
+## Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+SECRET_KEY=your-secure-secret-key
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+```
+
+Note: Make sure to use a secure secret key in production. Never commit your `.env` file to version control.
+
 ## Technology Stack
+
 - FastAPI – High-performance framework for building APIs
 - SQLModel – ORM combining SQLAlchemy and Pydantic
 - SQLite – Lightweight, file-based database
@@ -26,18 +39,18 @@ The API leverages SQLite as the database, using SQLModel—a modern ORM built on
 This API follows OAuth2.0 Password Flow, allowing users to authenticate using their username and password. Upon successful authentication, a JWT Bearer Token is issued, which must be included in all authenticated requests.
 
 ### Authentication Flow:
-1.	User Registration: Create an account by providing a username and password.
-2.	Token Generation: Authenticate using credentials to receive a JWT Token.
-3.	Authenticated Requests: Use the Bearer Token in all API requests requiring authentication.
+
+1. User Registration: Create an account by providing a username and password.
+2. Token Generation: Authenticate using credentials to receive a JWT Token.
+3. Authenticated Requests: Use the Bearer Token in all API requests requiring authentication.
 
 #### Example of an authenticated request:
 
-`
-GET /todos/
-Authorization: Bearer YOUR_ACCESS_TOKEN
-`
+`GET /todos/
+Authorization: Bearer YOUR_ACCESS_TOKEN`
 
 ## Future Enhancements
+
 - Migrate from SQLite to PostgreSQL for better scalability
 - Implement Role-Based Access Control (RBAC) to restrict access based on user roles
 - Enhance logging and monitoring for better observability

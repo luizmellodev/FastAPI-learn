@@ -30,3 +30,14 @@ clean:
 	find . -type f -name "*.pyc" -delete
 
 setup-clean: clean setup
+
+check:
+	@echo "Running server health check..."
+	source venv/bin/activate && python3 -c "from app.main import app; print('✓ Server imports working')"
+	@echo "\n✨ Health check successful! ✨"
+
+build-strict: format lint test check
+	@echo "\n✨ Strict build successful! ✨"
+
+build: format check
+	@echo "\n✨ Basic build successful! ✨"
